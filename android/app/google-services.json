@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "472074932811",
+    "project_id": "equipment-checking-system-app",
+    "storage_bucket": "equipment-checking-system-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472074932811:android:fab4657ffc0b72167573ce",
+        "android_client_info": {
+          "package_name": "com.example.equipmentcheckingsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmqR4YCF6CsV7jAhzh6x0xVuWRRZHxG2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
