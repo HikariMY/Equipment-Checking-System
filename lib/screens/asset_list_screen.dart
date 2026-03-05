@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'qr_scan_screen.dart';
+import 'edit_asset_screen.dart';
 
-// เปลี่ยนจาก StatelessWidget เป็น StatefulWidget เพื่อให้จัดการค่าการค้นหาได้
 class AssetListScreen extends StatefulWidget {
-  const AssetListScreen({super.key});
+  final bool isAdmin; 
+  const AssetListScreen({super.key, required this.isAdmin});
 
   @override
   State<AssetListScreen> createState() => _AssetListScreenState();
@@ -23,11 +24,10 @@ class _AssetListScreenState extends State<AssetListScreen> {
       appBar: AppBar(
         title: const Text('ครุภัณฑ์', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF1D4ED8),
-        centerTitle: false, // ปรับให้อยู่ชิดซ้ายตาม Figma
+        centerTitle: false,
       ),
       body: Column(
         children: [
-          // 1. ส่วนช่องค้นหา และ ปุ่มสแกน QR
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -49,7 +49,6 @@ class _AssetListScreenState extends State<AssetListScreen> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
-                    // เปลี่ยนคำสั่งในปุ่มนี้ ให้พาไปยังหน้า QrScanScreen
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const QrScanScreen()),
@@ -66,7 +65,6 @@ class _AssetListScreenState extends State<AssetListScreen> {
             ),
           ),
 
-          // 2. ส่วนปุ่มตัวกรอง (Filter Chips)
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -87,7 +85,7 @@ class _AssetListScreenState extends State<AssetListScreen> {
                       color: isSelected ? Colors.white : Colors.black87,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
-                    showCheckmark: false, // ปิดเครื่องหมายติ๊กถูกเพื่อความมินิมอล
+                    showCheckmark: false,
                   ),
                 );
               }).toList(),
@@ -96,7 +94,6 @@ class _AssetListScreenState extends State<AssetListScreen> {
 
           const SizedBox(height: 8),
 
-          // 3. ส่วนแสดงรายการครุภัณฑ์
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('assets').snapshots(),
@@ -105,14 +102,10 @@ class _AssetListScreenState extends State<AssetListScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
                 if (snapshot.data!.docs.isEmpty) return const Center(child: Text('ยังไม่มีข้อมูลครุภัณฑ์'));
 
-                // นำข้อมูลทั้งหมดมาคัดกรอง (Filter & Search) ก่อนแสดงผล
                 var filteredDocs = snapshot.data!.docs.where((doc) {
                   var data = doc.data() as Map<String, dynamic>;
-                  
-                  // เช็คเงื่อนไขตัวกรองสถานะ
                   bool matchFilter = _selectedFilter == 'ทั้งหมด' || data['status'] == _selectedFilter;
                   
-                  // เช็คเงื่อนไขการพิมพ์ค้นหา (หาจาก รหัส หรือ ชื่อ)
                   String idString = doc.id.toLowerCase();
                   String nameString = (data['name'] ?? '').toString().toLowerCase();
                   String searchString = _searchQuery.toLowerCase();
@@ -132,7 +125,6 @@ class _AssetListScreenState extends State<AssetListScreen> {
                     var doc = filteredDocs[index];
                     var data = doc.data() as Map<String, dynamic>;
 
-                    // จัดการรูปภาพ Base64
                     Widget imageWidget;
                     String? base64String = data['image_base64'];
                     if (base64String != null && base64String.isNotEmpty) {
@@ -173,7 +165,16 @@ class _AssetListScreenState extends State<AssetListScreen> {
                         ),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
                         onTap: () {
-                          // TODO: ไปหน้ารายละเอียดเพื่อแก้ไข
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditAssetScreen(
+                                docId: doc.id,
+                                currentData: data,
+                                isAdmin: widget.isAdmin, 
+                              ),
+                            ),
+                          );
                         },
                       ),
                     );

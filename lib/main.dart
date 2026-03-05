@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; 
-import 'screens/main_screen.dart'; // import หน้า Main Screen
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1D4ED8)),
         useMaterial3: true,
       ),
-      home: const MainScreen(), // เรียกใช้งานหน้า MainScreen ที่เราเพิ่งสร้าง
+      home: const LoginScreen(), // เรียกใช้งานหน้า MainScreen ที่เราเพิ่งสร้าง
     );
   }
 }
