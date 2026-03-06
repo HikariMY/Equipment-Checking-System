@@ -38,7 +38,7 @@ class _ImportCsvScreenState extends State<ImportCsvScreen> {
         final csvString = utf8.decode(bytes);
         
         // แปลง Text ให้กลายเป็นตาราง (List ของแถวและคอลัมน์)
-        List<List<dynamic>> csvTable = const CsvToListConverter().convert(csvString);
+        List<List<dynamic>> csvTable = CsvCodec().decode(csvString);
 
         if (csvTable.isEmpty || csvTable.length == 1) {
           throw Exception("ไฟล์ว่างเปล่า หรือไม่มีข้อมูลครุภัณฑ์");
@@ -63,6 +63,9 @@ class _ImportCsvScreenState extends State<ImportCsvScreen> {
             String location = row[4].toString().trim();
             double price = double.tryParse(row[5].toString()) ?? 0.0;
             String status = row.length >= 7 ? row[6].toString().trim() : 'ปกติ';
+            
+            // ดึงข้อมูล Base64 จากคอลัมน์ที่ 8 (ถ้ามี)
+            String imageBase64 = row.length >= 8 ? row[7].toString().trim() : ''; 
 
             // ถ้ามีรหัสครุภัณฑ์ ให้บันทึกลง Firestore เลย
             if (id.isNotEmpty) {
@@ -73,7 +76,7 @@ class _ImportCsvScreenState extends State<ImportCsvScreen> {
                 'location': location,
                 'price': price,
                 'status': status,
-                'image_base64': '', // ข้อมูลนำเข้าจะยังไม่มีรูปภาพ
+                'image_base64': imageBase64, // บันทึกรูปภาพ Base64 ลงฐานข้อมูล
                 'purchase_date': FieldValue.serverTimestamp(),
               });
               successCount++;
