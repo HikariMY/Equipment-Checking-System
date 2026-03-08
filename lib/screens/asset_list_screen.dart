@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'qr_scan_screen.dart';
 import 'edit_asset_screen.dart';
+import 'asset_detail_screen.dart';
 
 class AssetListScreen extends StatefulWidget {
   final bool isAdmin; 
@@ -168,10 +169,10 @@ class _AssetListScreenState extends State<AssetListScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EditAssetScreen(
+                              builder: (context) => AssetDetailScreen(
                                 docId: doc.id,
-                                currentData: data,
-                                isAdmin: widget.isAdmin, 
+                                assetData: data,
+                                isAdmin: widget.isAdmin, // ส่งสิทธิ์แอดมินไปเช็คการลบ/แก้ไข
                               ),
                             ),
                           );
